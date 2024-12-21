@@ -11,11 +11,6 @@
             <div class="chart-wrapper">
                 <canvas id="bar-chart-{{ $loop->index }}" class="chart" width="400" height="200"></canvas>
             </div>
-
-            <!-- Pie Chart -->
-            <div class="chart-wrapper">
-                <canvas id="pie-chart-{{ $loop->index }}" class="chart" width="400" height="200"></canvas>
-            </div>
         </div>
 
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -46,39 +41,6 @@
                         y: {
                             beginAtZero: true,
                             max: 100  // Percentage scale
-                        }
-                    }
-                }
-            });
-
-            // Pie Chart
-            var pieCtx = document.getElementById('pie-chart-{{ $loop->index }}').getContext('2d');
-            var pieChart = new Chart(pieCtx, {
-                type: 'pie',
-                data: {
-                    labels: ['Correct Answers', 'Incorrect Answers'],
-                    datasets: [{
-                        data: [
-                            {!! json_encode($data['correctPercentages']) !!}.reduce((a, b) => a + b, 0),  // Total correct answers
-                            {!! json_encode($data['incorrectPercentages']) !!}.reduce((a, b) => a + b, 0)  // Total incorrect answers
-                        ],
-                        backgroundColor: ['rgba(75, 192, 192, 0.2)', 'rgba(255, 99, 132, 0.2)'],  // Light green and red
-                        borderColor: ['rgba(75, 192, 192, 1)', 'rgba(255, 99, 132, 1)'],  // Green and red border
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2) + '%';
-                                }
-                            }
                         }
                     }
                 }

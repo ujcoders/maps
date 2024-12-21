@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UsersQuizController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\GraphController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,6 +17,9 @@ use App\Http\Controllers\Admin\QuestionController;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+
+// Redirect to Login
+Route::redirect("/", "login");
 
 // Login Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login.form');
@@ -33,19 +38,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
 });
 
 // Question Routes
-// Question Routes
 Route::get('/active/{questionId?}', [QuestionController::class, 'showActiveQuestion'])->name('questions.active');
 Route::post('/questions/{questionId}/check-answer', [QuestionController::class, 'checkAnswer'])->name('questions.checkAnswer');
 Route::get('/thank-you', [QuestionController::class, 'thankYou'])->name('thankYou');
-
-
 Route::post('/update-attempts', [QuestionController::class, 'updateAttempts'])->name('user.updateAttempts');
-
-
-
-
-use App\Http\Controllers\ReportController;
-use App\Http\Controllers\GraphController;
 
 // Report Page
 Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
