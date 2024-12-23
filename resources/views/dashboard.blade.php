@@ -10,89 +10,95 @@
             padding: 0;
             width: 100vw;
             height: 100vh;
-            overflow: hidden;
+            font-family: Arial, sans-serif;
         }
         .map-container {
             position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-        .map-image {
             width: 100%;
             height: 100%;
-            object-fit: cover;
+            background: url('{{ asset('map.jpg') }}') no-repeat center center;
+            background-size: cover;
         }
-        .button {
+        .question-list {
             position: absolute;
-            padding: 10px 20px;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .regin {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .question-button {
+            padding: 10px 15px;
             border: none;
+            font-size: 14px;
+            font-weight: bold;
             color: white;
-            font-size: 16px;
             cursor: pointer;
             border-radius: 5px;
+            min-width: 100px;
+            text-align: center;
         }
-        .button:hover {
-            filter: brightness(0.9);
-        }
-        .active-btn {
-            top: 40%;
-            left: 90%;
+        .question-button.active {
             background-color: yellow;
             color: black;
         }
-        .inactive-btn {
-            top: 50%;
-            left: 90%;
+        .question-button.attempted {
+            background-color: blue;
+        }
+        .question-button.inactive {
             background-color: red;
         }
-        .complete-btn {
-            top: 60%;
-            left: 90%;
-            background-color: blue;
+        .question-button:hover {
+            filter: brightness(0.9);
         }
     </style>
 </head>
 <body>
     <div class="map-container">
-        <img src="{{ asset('map.jpg') }}" alt="Map" class="map-image">
-
         @php
-        $nextQuestion = \App\Models\Question::where('is_active', true)->first();
-        $user = session('user'); // Assuming you are using authentication to get the logged-in user
-        $userHasAttempted = $user->attempts > 0;
+        $user = session('user'); // Get authenticated user
+        $userAnswers = \App\Models\UserAnswer::where('user_id', $user->id)->get()->keyBy('question_id'); // User attempts
+        $questions = \App\Models\Question::all(); // All questions
         @endphp
 
-<button class="button active-btn" onclick="setActiveAndNavigate('{{ route('questions.active', $nextQuestion->id) }}')">Active</button>
-        {{-- @if (!$userHasAttempted)
-        @endif --}}
+        <div class="question-list">
+            @foreach ($questions as $question)
+                @php
+                    $buttonClass = 'inactive'; // Default
+                    if ($userAnswers->has($question->id)) {
+                        // dump($userAnswers);
+                        // dd($question->id);
+                        $buttonClass = 'attempted'; // User has attempted
+                    }
+                    if ($question->is_active and !$userAnswers->has($question->id)) {
+                        $buttonClass = 'active'; // Active question
+                    }
+                @endphp
+               <button
+               class="question-button {{ $buttonClass }}"
+               onclick="navigateTo('{{ route('questions.active', $question->id) }}')"
+               {{ $buttonClass === 'attempted' ? 'disabled' : '' }}>
+               Q{{ $loop->iteration }}
+                </button>
+            @endforeach
+        </div>
+        <div class="regin">
+            <img src="{{ asset('regin.png') }}" alt="loading" width="200px">
+        </div>
 
-        <button class="button inactive-btn" onclick="navigateTo('{{ route('inactive.view') }}')">Inactive</button>
-        <button class="button complete-btn" onclick="navigateTo('{{ route('complete.view') }}')">Complete</button>
     </div>
 
     <script>
         function navigateTo(url) {
             window.location.href = url;
-        }
-
-        function setActiveAndNavigate(url) {
-            // Send AJAX request to update attempts
-            fetch('{{ route('user.updateAttempts') }}', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                },
-                body: JSON.stringify({ attempt: 1 })
-            })
-            .then(response => response.json())
-            .then(data => {
-                // Navigate to the active question
-                window.location.href = url;
-            })
-            .catch(error => {
-                console.error('Error:', error);
-            });
         }
     </script>
 </body>

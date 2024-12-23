@@ -4,60 +4,53 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\UserAnswer;
-use App\Models\User;
 use App\Models\Question;
-use DB;
 
 class GraphController extends Controller
 {
     public function index()
     {
-        // Get all questions
-        $questions = Question::all(); // Fetch all questions
+        // Fetch all questions
+        $questions = Question::all();
 
         $chartData = [];
 
-        // Loop through each question to prepare chart data
         foreach ($questions as $question) {
             $questionId = $question->id;
 
-            // Get all the users who attempted this question
+            // Fetch user answers with region data
             $userAnswers = UserAnswer::where('question_id', $questionId)
                 ->join('users', 'users.id', '=', 'user_answers.user_id')
-                ->select('users.id', 'users.name', 'users.state', 'user_answers.is_correct')
+                ->select('users.region', 'user_answers.is_correct')
                 ->get();
 
-            // Group the data by state
-            $stateData = $userAnswers->groupBy('state');
+            // Group data by region
+            $regionData = $userAnswers->groupBy('region');
 
-            // Prepare the data for the chart
-            $states = [];
+            $regions = [];
             $correctPercentages = [];
             $incorrectPercentages = [];
 
-            // Calculate statistics for each state
-            foreach ($stateData as $state => $answers) {
+            // Calculate stats for each region
+            foreach ($regionData as $region => $answers) {
                 $totalUsers = $answers->count();
                 $correctAnswers = $answers->where('is_correct', 1)->count();
-                $incorrectAnswers = $totalUsers - $correctAnswers;
                 $correctPercentage = ($totalUsers > 0) ? ($correctAnswers / $totalUsers) * 100 : 0;
                 $incorrectPercentage = 100 - $correctPercentage;
 
-                $states[] = $state;
-                $correctPercentages[] = $correctPercentage;
-                $incorrectPercentages[] = $incorrectPercentage;
+                $regions[] = $region;
+                $correctPercentages[] = round($correctPercentage, 2);
+                $incorrectPercentages[] = round($incorrectPercentage, 2);
             }
 
-            // Prepare chart data for the question
             $chartData[] = [
-                'question' => $question->question_text,  // Assuming you have a 'text' field for the question
-                'states' => $states,
+                'question' => $question->question_text,
+                'regions' => $regions,
                 'correctPercentages' => $correctPercentages,
-                'incorrectPercentages' => $incorrectPercentages
+                'incorrectPercentages' => $incorrectPercentages,
             ];
         }
 
-        // Pass the data to the view
         return view('graphs.index', compact('chartData'));
     }
 }

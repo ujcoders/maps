@@ -107,6 +107,53 @@
                 transform: translateY(0);
             }
         }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            form {
+                padding: 20px;
+                width: 90%;
+            }
+
+            label {
+                font-size: 0.9rem;
+            }
+
+            input[type="text"],
+            input[type="password"] {
+                padding: 8px;
+            }
+
+            button {
+                font-size: 0.9rem;
+                padding: 8px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            form {
+                padding: 15px;
+            }
+
+            label {
+                font-size: 0.8rem;
+            }
+
+            input[type="text"],
+            input[type="password"] {
+                padding: 7px;
+                font-size: 0.9rem;
+            }
+
+            button {
+                font-size: 0.8rem;
+                padding: 7px;
+            }
+        }
     </style>
 </head>
 <body>

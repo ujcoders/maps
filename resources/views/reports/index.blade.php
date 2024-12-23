@@ -1,34 +1,44 @@
 @extends('layouts.admin')
 
 @section('content')
-    <h1>Questions Report</h1>
+<div class="container my-4">
+    <h1 class="mb-4">Questions Report</h1>
 
     @foreach ($reportData as $data)
-        <h2>Report for Question: {{ $data['question'] }}</h2>
-        <h4>Overall Correct Percentage: {{ $data['overall_percentage'] }}%</h4>
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2>Report for Question: {{ $data['question'] }}</h2>
+            </div>
+            <div class="card-body">
+                <h4 class="text-success">Overall Correct Percentage: {{ $data['overall_percentage'] }}%</h4>
 
-        <!-- State-wise Report -->
-        <table class="table table-striped table-hover">
-            <thead>
-                <tr>
-                    <th>State</th>
-                    <th>Total Users</th>
-                    <th>Correct Answers</th>
-                    <th>Incorrect Answers</th>
-                    <th>Correct Percentage</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach ($data['report_data'] as $stateData)
-                    <tr>
-                        <td>{{ $stateData['state'] }}</td>
-                        <td>{{ $stateData['total_users'] }}</td>
-                        <td>{{ $stateData['correct_answers'] }}</td>
-                        <td>{{ $stateData['incorrect_answers'] }}</td>
-                        <td>{{ $stateData['correct_percentage'] }}%</td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                <!-- Region-wise Report -->
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Region</th>
+                                <th>Total Users</th>
+                                <th>Correct Answers</th>
+                                <th>Incorrect Answers</th>
+                                <th>Correct Percentage</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($data['report_data'] as $regionData)
+                                <tr>
+                                    <td>{{ $regionData['region'] }}</td>
+                                    <td>{{ $regionData['total_users'] }}</td>
+                                    <td>{{ $regionData['correct_answers'] }}</td>
+                                    <td>{{ $regionData['incorrect_answers'] }}</td>
+                                    <td>{{ $regionData['correct_percentage'] }}%</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     @endforeach
+</div>
 @endsection

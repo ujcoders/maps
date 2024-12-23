@@ -48,6 +48,9 @@ class QuestionController extends Controller
 
         // Get the selected answer's ID
         $selectedAnswerId = $request->input('answer');
+        if (empty($selectedAnswerId)) {
+            return back()->with('error', 'Your  Please select one option');
+        }
         $correctAnswer = $question->answers()->where('is_correct', true)->first(); // Get the correct answer
 
         // Determine if the answer is correct
